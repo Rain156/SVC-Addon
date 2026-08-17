@@ -1,0 +1,29 @@
+plugins {
+    id 'base'
+}
+
+allprojects {
+    group = project.mod_group
+    version = project.mod_version
+
+    repositories {
+        mavenCentral()
+        maven {
+            name = 'MaxHenkel'
+            url = 'https://maven.maxhenkel.de/repository/public'
+        }
+        maven {
+            name = 'Modrinth'
+            url = 'https://api.modrinth.com/maven'
+            content {
+                includeGroup 'maven.modrinth'
+            }
+        }
+    }
+}
+
+tasks.register('assembleRelease') {
+    group = 'build'
+    description = 'Builds and tests both loader artifacts.'
+    dependsOn ':common:test', ':fabric:build', ':neoforge:build'
+}

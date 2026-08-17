@@ -1,0 +1,29 @@
+plugins {
+    id 'java-library'
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(project.java_version as int)
+    withSourcesJar()
+}
+
+dependencies {
+    compileOnly "de.maxhenkel.voicechat:voicechat-api:${project.voicechat_api_version}"
+
+    testImplementation platform('org.junit:junit-bom:5.13.4')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = project.java_version as int
+    options.encoding = 'UTF-8'
+    options.compilerArgs += ['-Xlint:all', '-Werror']
+}
+
+tasks.named('test', Test) {
+    useJUnitPlatform()
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+    }
+}

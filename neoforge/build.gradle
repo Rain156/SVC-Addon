@@ -1,0 +1,88 @@
+plugins {
+    id 'java-library'
+    id 'net.neoforged.moddev' version "${moddevgradle_version}"
+}
+
+base {
+    archivesName = 'svc-addon-neoforge'
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(project.java_version as int)
+    withSourcesJar()
+}
+
+neoForge {
+    version = project.neoforge_version
+
+    runs {
+        client {
+            client()
+        }
+        server {
+            server()
+            programArgument '--nogui'
+        }
+    }
+
+    mods {
+        svc_addon {
+            sourceSet sourceSets.main
+            sourceSet project(':common').sourceSets.main
+        }
+    }
+}
+
+configurations {
+    runtimeClasspath.extendsFrom localRuntime
+}
+
+dependencies {
+    implementation project(':common')
+    compileOnly "de.maxhenkel.voicechat:voicechat-api:${project.voicechat_api_version}"
+    localRuntime "maven.modrinth:simple-voice-chat:neoforge-${project.voicechat_version}"
+}
+
+def generateModMetadata = tasks.register('generateModMetadata', ProcessResources) {
+    def replaceProperties = [
+            version              : project.version,
+            minecraft_version    : project.minecraft_version,
+            neoforge_version     : project.neoforge_version,
+            mod_id               : project.mod_id,
+            mod_name             : project.mod_name,
+            mod_author           : project.mod_author,
+            mod_license          : project.mod_license,
+            voicechat_api_version: project.voicechat_api_version
+    ]
+    inputs.properties replaceProperties
+    expand replaceProperties
+    from 'src/main/templates'
+    into layout.buildDirectory.dir('generated/sources/modMetadata')
+}
+
+sourceSets.main.resources {
+    srcDir generateModMetadata
+    srcDir project(':common').sourceSets.main.resources
+}
+
+neoForge.ideSyncTask generateModMetadata
+
+tasks.named('jar', Jar) {
+    from(project(':common').sourceSets.main.output) {
+        exclude 'svc_addon-default.properties'
+    }
+    archiveVersion = "${project.version}+mc${project.minecraft_version}"
+}
+
+tasks.named('sourcesJar', Jar) {
+    from(project(':common').sourceSets.main.allSource) {
+        exclude 'svc_addon-default.properties'
+    }
+    archiveVersion = "${project.version}+mc${project.minecraft_version}"
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = project.java_version as int
+    options.encoding = 'UTF-8'
+    options.compilerArgs += ['-Xlint:all', '-Werror']
+}

@@ -1,0 +1,10 @@
+.gradle/
+.gradle-user/
+**/build/
+**/run/
+**/runs/
+.idea/
+.vscode/
+*.iml
+*.log
+hs_err_*.log
