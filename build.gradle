@@ -1,29 +1,63 @@
 plugins {
     id 'base'
+    id 'net.fabricmc.fabric-loom-companion' version '1.17.20' apply false
 }
 
-allprojects {
-    group = project.mod_group
-    version = project.mod_version
+def targetFile = file("gradle/targets/${gameVersion}.properties")
+if (!targetFile.isFile()) {
+    throw new GradleException("Unsupported gameVersion '${gameVersion}'. Supported: 1.21.1, 26.2")
+}
+def target = new Properties()
+targetFile.withInputStream { target.load(it) }
+ext.target = target
+ext.voicechatApiVersion = '2.6.20'
 
+allprojects {
+    group = 'io.github.rain156.svcaddon'
+    version = rootProject.modVersion
+}
+
+subprojects {
+    apply plugin: 'java-library'
     repositories {
         mavenCentral()
         maven {
-            name = 'MaxHenkel'
             url = 'https://maven.maxhenkel.de/repository/public'
+            content { includeGroup 'de.maxhenkel.voicechat' }
         }
         maven {
-            name = 'Modrinth'
             url = 'https://api.modrinth.com/maven'
-            content {
-                includeGroup 'maven.modrinth'
-            }
+            content { includeGroup 'maven.modrinth' }
         }
+    }
+    def isPlatform = name in ['fabric', 'neoforge']
+    java {
+        toolchain.languageVersion = JavaLanguageVersion.of(isPlatform ? target.javaVersion as int : 21)
+        withSourcesJar()
+    }
+    layout.buildDirectory = layout.projectDirectory.dir("build/${rootProject.gameVersion}")
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+        options.release = isPlatform ? target.javaVersion as int : 21
+        options.compilerArgs.addAll(['-Xlint:all', '-parameters'])
+    }
+    tasks.withType(AbstractArchiveTask).configureEach {
+        preserveFileTimestamps = false
+        reproducibleFileOrder = true
+    }
+    tasks.withType(Jar).configureEach {
+        from(rootProject.file('LICENSE'))
+    }
+    dependencies {
+        testImplementation platform('org.junit:junit-bom:5.14.1')
+        testImplementation 'org.junit.jupiter:junit-jupiter'
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    }
+    tasks.withType(Test).configureEach {
+        useJUnitPlatform()
+        testLogging { events 'failed', 'skipped'; exceptionFormat 'full' }
     }
 }
 
-tasks.register('assembleRelease') {
-    group = 'build'
-    description = 'Builds and tests both loader artifacts.'
-    dependsOn ':common:test', ':fabric:build', ':neoforge:build'
-}
+tasks.named('build') { dependsOn subprojects.collect { it.tasks.named('build') } }
+tasks.named('check') { dependsOn subprojects.collect { it.tasks.named('check') } }

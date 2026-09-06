@@ -1,0 +1,6 @@
+dependencies {
+    api project(':core')
+    compileOnly "de.maxhenkel.voicechat:voicechat-api:${rootProject.voicechatApiVersion}"
+    testImplementation "de.maxhenkel.voicechat:voicechat-api:${rootProject.voicechatApiVersion}"
+    testImplementation 'org.mockito:mockito-core:5.14.2'
+}

@@ -1,0 +1,33 @@
+plugins {
+    id 'net.fabricmc.fabric-loom' apply false
+    id 'net.fabricmc.fabric-loom-remap' apply false
+}
+apply plugin: rootProject.gameVersion == '1.21.1' ? 'net.fabricmc.fabric-loom-remap' : 'net.fabricmc.fabric-loom'
+apply from: rootProject.file('gradle/platform.gradle')
+
+dependencies {
+    minecraft "com.mojang:minecraft:${rootProject.gameVersion}"
+    if (rootProject.gameVersion == '1.21.1') {
+        mappings loom.officialMojangMappings()
+        modImplementation "net.fabricmc:fabric-loader:${rootProject.target.fabricLoader}"
+        modImplementation "net.fabricmc.fabric-api:fabric-api:${rootProject.target.fabricApi}"
+        modRuntimeOnly "maven.modrinth:simple-voice-chat:fabric-${rootProject.target.voicechatVersion}"
+        // Loom strips nested mod metadata during remapping. Restore SVC's official API marker in dev only.
+        modRuntimeOnly "de.maxhenkel.voicechat:voicechat-api:${rootProject.voicechatApiVersion}:fabric-stub"
+    } else {
+        implementation "net.fabricmc:fabric-loader:${rootProject.target.fabricLoader}"
+        implementation "net.fabricmc.fabric-api:fabric-api:${rootProject.target.fabricApi}"
+        runtimeOnly "maven.modrinth:simple-voice-chat:fabric-${rootProject.target.voicechatVersion}"
+    }
+}
+loom {
+    mods {
+        svcaddon {
+            sourceSet sourceSets.main
+            sourceSet project(':api').sourceSets.main
+            sourceSet project(':core').sourceSets.main
+            sourceSet project(':voicechat').sourceSets.main
+        }
+    }
+    runs.configureEach { runDir "run/${rootProject.gameVersion}/${it.name}" }
+}

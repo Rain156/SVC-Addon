@@ -1,13 +1,23 @@
 pluginManagement {
     repositories {
-        maven {
-            name = 'Fabric'
-            url = 'https://maven.fabricmc.net/'
-        }
+        maven { url = 'https://maven.fabricmc.net/' }
+        maven { url = 'https://maven.neoforged.net/releases' }
         gradlePluginPortal()
-        mavenCentral()
+    }
+    plugins {
+        id 'net.fabricmc.fabric-loom' version '1.17.20'
+        id 'net.fabricmc.fabric-loom-remap' version '1.17.20'
+        id 'net.neoforged.moddev' version '2.0.146'
     }
 }
 
 rootProject.name = 'svc-addon'
-include 'common', 'fabric', 'neoforge'
+include 'api', 'core', 'voicechat'
+if (!providers.gradleProperty('coreOnly').map { it.toBoolean() }.getOrElse(false)) {
+    def loader = providers.gradleProperty('loader').getOrElse('all')
+    if (!(loader in ['all', 'fabric', 'neoforge'])) throw new GradleException("Unknown loader '${loader}'")
+    (loader == 'all' ? ['fabric', 'neoforge'] : [loader]).each {
+        include it
+        project(":${it}").projectDir = file("platforms/${it}")
+    }
+}

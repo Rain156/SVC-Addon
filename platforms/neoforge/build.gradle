@@ -1,0 +1,23 @@
+plugins {
+    id 'net.neoforged.moddev'
+}
+apply from: rootProject.file('gradle/platform.gradle')
+
+neoForge {
+    version = rootProject.target.neoForge
+    runs {
+        client { client(); gameDirectory = file("run/${rootProject.gameVersion}/client") }
+        server { server(); programArgument '--nogui'; gameDirectory = file("run/${rootProject.gameVersion}/server") }
+    }
+    mods {
+        svcaddon {
+            sourceSet sourceSets.main
+            sourceSet project(':api').sourceSets.main
+            sourceSet project(':core').sourceSets.main
+            sourceSet project(':voicechat').sourceSets.main
+        }
+    }
+}
+dependencies {
+    runtimeOnly "maven.modrinth:simple-voice-chat:neoforge-${rootProject.target.voicechatVersion}"
+}

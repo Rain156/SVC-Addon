@@ -1,2 +1,0 @@
-a17a6659c7247b0d20e6aaad6a1e3a51d80f59b611bed7f6178c6dbaa36f72be  fabric/build/libs/svc-addon-fabric-1.0.0+mc26.1.2.jar
-96ca3d4693d2350fc3963ef86ea7175d0a2368da1d8ce98d519a30f9b202e7bd  neoforge/build/libs/svc-addon-neoforge-1.0.0+mc26.1.2.jar

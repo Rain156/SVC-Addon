@@ -1,0 +1,9 @@
+{
+  "command.svcaddon.status": "SVC Addon: voice=%s; dynamic=%s; range=%s..%s blocks.",
+  "command.svcaddon.updated": "Updated voice settings for %s player(s).",
+  "command.svcaddon.reloaded": "SVC Addon configuration reloaded.",
+  "command.svcaddon.level": "%s: %s dBFS",
+  "command.svcaddon.no_groups": "No voice groups.",
+  "command.svcaddon.group_created": "Created group %s (%s).",
+  "command.svcaddon.group_removed": "Removed group %s."
+}

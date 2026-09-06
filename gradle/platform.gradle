@@ -1,0 +1,32 @@
+// Shared platform packaging. Business modules are merged once; upstream API is never bundled.
+base.archivesName = "svcaddon-${project.name}-${rootProject.gameVersion}"
+dependencies {
+    implementation project(':voicechat')
+    compileOnly "de.maxhenkel.voicechat:voicechat-api:${rootProject.voicechatApiVersion}"
+}
+
+sourceSets.main.java {
+    srcDir rootProject.file('platforms/minecraft/src/main/java')
+    srcDir rootProject.file("platforms/minecraft/src/${rootProject.gameVersion}/java")
+}
+sourceSets.main.resources.srcDir rootProject.file('platforms/minecraft/src/main/resources')
+
+def sharedProjects = [project(':api'), project(':core'), project(':voicechat')]
+tasks.named('jar', Jar) {
+    archiveBaseName = "svcaddon-${project.name}-${rootProject.gameVersion}"
+    sharedProjects.each { from(it.sourceSets.main.output) }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+tasks.named('sourcesJar', Jar) {
+    sharedProjects.each { from(it.sourceSets.main.allSource) }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+tasks.named('processResources', ProcessResources) {
+    def props = [version: project.version, minecraft: rootProject.gameVersion,
+                 java: rootProject.target.javaVersion, fabricLoader: rootProject.target.fabricLoader,
+                 neoForgeRange: rootProject.target.neoForgeRange,
+                 minecraftRange: rootProject.target.minecraftRange,
+                 voicechatApi: rootProject.voicechatApiVersion]
+    inputs.properties(props)
+    filesMatching(['fabric.mod.json', 'META-INF/neoforge.mods.toml']) { expand(props) }
+}

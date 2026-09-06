@@ -1,10 +1,12 @@
 .gradle/
-.gradle-user/
 **/build/
 **/run/
 **/runs/
 .idea/
 .vscode/
 *.iml
+.work/
 *.log
-hs_err_*.log
+.DS_Store
+__pycache__/
+*.py[cod]

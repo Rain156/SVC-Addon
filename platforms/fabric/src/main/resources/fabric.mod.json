@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "svcaddon",
+  "version": "${version}",
+  "name": "SVC Addon",
+  "description": "Configurable voice propagation and administration for Simple Voice Chat.",
+  "authors": ["Rain156"],
+  "contact": {
+    "sources": "https://github.com/Rain156/SVC-Addon",
+    "issues": "https://github.com/Rain156/SVC-Addon/issues"
+  },
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["io.github.rain156.svcaddon.fabric.SvcAddonFabric"],
+    "voicechat": ["io.github.rain156.svcaddon.voicechat.SvcVoicechatPlugin"]
+  },
+  "depends": {
+    "fabricloader": ">=${fabricLoader}",
+    "minecraft": "${minecraft}",
+    "java": ">=${java}",
+    "fabric-api": "*",
+    "voicechat": "*",
+    "voicechat_api": ">=${voicechatApi}"
+  }
+}

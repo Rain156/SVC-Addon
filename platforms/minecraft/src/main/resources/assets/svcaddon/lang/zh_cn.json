@@ -1,0 +1,9 @@
+{
+  "command.svcaddon.status": "SVC Addon：语音服务=%s；动态距离=%s；传播范围=%s～%s 格。",
+  "command.svcaddon.updated": "已更新 %s 名玩家的语音设置。",
+  "command.svcaddon.reloaded": "已重新加载 SVC Addon 配置。",
+  "command.svcaddon.level": "%s：%s dBFS",
+  "command.svcaddon.no_groups": "当前没有语音群组。",
+  "command.svcaddon.group_created": "已创建群组 %s（%s）。",
+  "command.svcaddon.group_removed": "已移除群组 %s。"
+}
